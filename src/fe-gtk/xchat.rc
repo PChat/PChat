@@ -1,0 +1,26 @@
+#include <winver.h>
+#include "../../config.h"
+#include "../../resource.h"
+
+XC_ICON ICON "../../pchat.ico"
+
+VS_VERSION_INFO VERSIONINFO
+	FILEVERSION    1,5,3,0
+	PRODUCTVERSION 1,5,3,0
+	BEGIN
+		BLOCK "StringFileInfo"
+		BEGIN
+			BLOCK "040904B0"
+			BEGIN
+				
+				VALUE "FileDescription", "PChat IRC Client"
+				VALUE "ProductName", "PChat"
+				VALUE "ProductVersion", 1.5.3.0
+				VALUE "FileVersion", 1.5.3.0
+			END
+		END
+		BLOCK "VarFileInfo"
+		BEGIN
+			VALUE "Translation", 0x0409, 0x04B0
+		END
+	END

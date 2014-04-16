@@ -1,0 +1,68 @@
+TARGET = ./src/fe-gtk/pchat.exe
+o = src/common/cfgfiles.o src/common/chanopt.o src/common/ctcp.o src/common/dcc.o src/common/history.o src/common/identd.o src/common/ignore.o src/common/inbound.o src/common/modes.o src/common/msproxy.o src/common/network.o src/common/notify.o src/common/outbound.o src/common/plugin.o src/common/plugin-timer.o src/common/proto-irc.o src/common/server.o src/common/servlist.o src/common/text.o src/common/thread.o src/common/tree.o src/common/url.o src/common/userlist.o src/common/util.o src/common/xchat.o
+
+CC = gcc
+WINDRES = windres
+STRIP = strip
+
+HAVE_GTK = 1
+HAVE_MMX = 1
+#HAVE_WXWIDGETS = 0
+HAVE_OPENSSL = 1
+
+LIBS = `pkg-config --libs gtk+-3.0 openssl libxml-2.0`
+DEFINES = `pkg-config --cflags gtk+-3.0 openssl libxml-2.0` -DGDK_DISABLE_DEPRECATED -DGSEAL_ENABLE -DGTK_DISABLE_SINGLE_INCLUDES
+OPENSSL_CFLAGS = `pkg-config --cflags openssl`
+LDFLAGS = -L. -mms-bitfields
+
+ifeq ($(HAVE_GTK), 1)
+   o += src/fe-gtk/about.o src/fe-gtk/ascii.o src/fe-gtk/banlist.o src/fe-gtk/chanlist.o src/fe-gtk/chanview.o src/fe-gtk/custom-list.o src/fe-gtk/dccgui.o src/fe-gtk/editlist.o src/fe-gtk/fe-gtk.o src/fe-gtk/fkeys.o src/fe-gtk/gtkutil.o src/fe-gtk/ignoregui.o src/fe-gtk/joind.o src/fe-gtk/maingui.o src/fe-gtk/menu.o src/fe-gtk/notifygui.o src/fe-gtk/palette.o src/fe-gtk/pixmaps.o src/fe-gtk/plugingui.o src/fe-gtk/plugin-tray.o src/fe-gtk/rawlog.o src/fe-gtk/search.o src/fe-gtk/servlistgui.o src/fe-gtk/setup.o src/fe-gtk/sexy-iso-codes.o src/fe-gtk/sexy-marshal.o src/fe-gtk/sexy-spell-entry.o src/fe-gtk/textgui.o src/fe-gtk/urlgrab.o src/fe-gtk/userlistgui.o src/fe-gtk/xtext.o src/fe-gtk/xchat.o
+   LIBS += $(GTK_LIBS)
+   DEFINES += $(GTK_CFLAGS)
+endif
+
+ifeq ($(HAVE_MMX), 1)
+   CFLAGS += -DUSE_MMX
+endif
+
+ifeq ($(HAVE_OPENSSL), 1)
+   o += src/common/ssl.o
+   LIBS += `pkg-config --libs openssl`
+   DEFINES += -DUSE_OPENSSL
+endif
+
+ifneq ($(V),1)
+   Q := @
+endif
+
+
+CFLAGS = -w -O3 -I. -mms-bitfields -mwindows $(DEFINES) $(LIBS)
+
+all: $(TARGET)
+
+$(TARGET): $(o)
+	$(Q)$(CC) src/fe-gtk/mmx_cmod.S -DUNDERSCORE_SYMBOL -o src/fe-gtk/mmx_cmod.o
+	$(Q)$(CC) -o $@ $(o) 
+	@$(if $(Q), $(shell echo echo LD $@),) $(LDFLAGS) $(LIBS) 
+	$(STRIP) $(TARGET)
+	
+%.o: %.rc
+	$(WINDRES) $< $@
+
+%.o: %.cpp
+	$(Q)$(CC) $(CFLAGS) $(DEFINES) -o $@ $<
+	@$(if $(Q), $(shell echo echo CC $<),)
+
+%.o: %.S
+	$(Q)$(CC) -o $@
+
+clean:
+	rm -rf ./src/dirent/*.o
+	rm -rf ./src/common/*.o
+	rm -rf ./src/fe-gtk/*.o
+	rm -rf ./src/xchat.o
+	rm -rf $(TARGET)
+
+install:
+
+.PHONY: all install uninstall clean
