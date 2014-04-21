@@ -13,12 +13,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  *
  * Claessens Xavier
  * xclaesse@gmail.com
  */
 
+#define GLIB_DISABLE_DEPRECATION_WARNINGS
 #include <dbus/dbus-glib.h>
 #include "dbus-client.h"
 #include "../xchat.h"
@@ -52,6 +53,7 @@ xchat_remote (void)
 	gboolean xchat_running;
 	GError *error = NULL;
 	char *command = NULL;
+	int i;
 
 	/* GnomeVFS >=2.15 uses D-Bus and threads, so threads should be
 	 * initialised before opening for the first time a D-Bus connection */

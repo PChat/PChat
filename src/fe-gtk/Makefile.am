@@ -2,7 +2,7 @@ localedir = $(datadir)/locale
 
 bin_PROGRAMS = pchat
 
-AM_CPPFLAGS = $(GUI_CFLAGS) -DG_DISABLE_CAST_CHECKS -DLOCALEDIR=\"$(localedir)\"
+AM_CPPFLAGS = $(GUI_CFLAGS) -DLOCALEDIR=\"$(localedir)\"
 
 pchat_LDADD = ../common/libxchatcommon.a $(GUI_LIBS)
 
@@ -21,9 +21,8 @@ if DO_PLUGIN
 plugingui_c = plugingui.c
 endif
 
-if USE_LIBSEXY
-sexy_spell = \
-	sexy-iso-codes.c sexy-marshal.c sexy-spell-entry.c
+if HAVE_ISO_CODES
+iso_codes_c = sexy-iso-codes.c
 endif
 
 pchat_SOURCES = about.c ascii.c banlist.c chanlist.c chanview.c custom-list.c \

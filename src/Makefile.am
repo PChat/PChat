@@ -11,4 +11,4 @@ if DO_GTK
 gtk_fe = fe-gtk
 endif
 
-SUBDIRS = pixmaps common $(gtk_fe) $(text_fe)
+SUBDIRS = common $(gtk_fe) $(text_fe)

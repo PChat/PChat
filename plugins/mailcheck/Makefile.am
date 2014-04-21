@@ -20,6 +20,6 @@ libdir = $(xchatdir)/plugins
 lib_LTLIBRARIES = mailcheck.la
 mailcheck_la_SOURCES = mailcheck.c
 mailcheck_la_LDFLAGS = -avoid-version -module 
-INCLUDES = $(COMMON_CFLAGS) $(PLUGIN_INCLUDES)
+AM_CPPFLAGS = $(COMMON_CFLAGS) $(PLUGIN_INCLUDES) -I$(srcdir)/../../src/common
 
 DISTCLEANFILES = pg_dir/*

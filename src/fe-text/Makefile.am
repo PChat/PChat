@@ -2,8 +2,6 @@ localedir = $(datadir)/locale
 
 bin_PROGRAMS = pchat-text
 
-EXTRA_DIST = README 
-
 AM_CPPFLAGS = $(COMMON_CFLAGS) -DLOCALEDIR=\"$(localedir)\"
 
 pchat_text_LDADD = ../common/libxchatcommon.a $(COMMON_LIBS)
