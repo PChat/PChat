@@ -2,16 +2,6 @@
 #define __XTEXT_H__
 
 #include <gtk/gtk.h>
-#ifdef USE_XFT
-#include <X11/Xft/Xft.h>
-#endif
-
-#ifdef USE_SHM
-#include <X11/Xlib.h>
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <X11/extensions/XShm.h>
-#endif
 
 #define GTK_TYPE_XTEXT              (gtk_xtext_get_type ())
 #define GTK_XTEXT(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GTK_TYPE_XTEXT, GtkXText))
@@ -97,13 +87,10 @@ struct _GtkXText
 	xtext_buffer *orig_buffer;
 	xtext_buffer *selection_buffer;
 
-#ifdef USE_SHM
-	XShmSegmentInfo shminfo;
-#endif
-
 	GtkAdjustment *adj;
-	GdkPixmap *pixmap;				/* 0 = use palette[19] */
-	GdkDrawable *draw_buf;			/* points to ->window */
+	//GdkPixmap *pixmap;				/* 0 = use palette[19] */
+	/*** GdkDrawable is no longer available in GTK3 replaced with GdkWindow ***/
+	GdkWindow *draw_buf;			/* points to ->window */
 	GdkCursor *hand_cursor;
 	GdkCursor *resize_cursor;
 
@@ -118,13 +105,13 @@ struct _GtkXText
 	int tint_green;
 	int tint_blue;
 
-	GdkGC *bgc;						  /* backing pixmap */
-	GdkGC *fgc;						  /* text foreground color */
-	GdkGC *light_gc;				  /* sep bar */
-	GdkGC *dark_gc;
-	GdkGC *thin_gc;
-	GdkGC *marker_gc;
-	gulong palette[XTEXT_COLS];
+//	GdkGC *bgc;						  /* backing pixmap */
+//	GdkGC *fgc;						  /* text foreground color */
+//	GdkGC *light_gc;				  /* sep bar */
+//	GdkGC *dark_gc;
+//	GdkGC *thin_gc;
+//	GdkGC *marker_gc;
+//	gulong palette[XTEXT_COLS];
 
 	gint io_tag;					  /* for delayed refresh events */
 	gint add_io_tag;				  /* "" when adding new text */
@@ -153,14 +140,6 @@ struct _GtkXText
 
 	guint16 fontwidth[128];	  /* each char's width, only the ASCII ones */
 
-#ifdef USE_XFT
-	XftColor color[XTEXT_COLS];
-	XftColor *xft_fg;
-	XftColor *xft_bg;				/* both point into color[20] */
-	XftDraw *xftdraw;
-	XftFont *font;
-	XftFont *ifont;				/* italics */
-#else
 	struct pangofont
 	{
 		PangoFontDescription *font;
@@ -169,7 +148,6 @@ struct _GtkXText
 		int descent;
 	} *font, pango_font;
 	PangoLayout *layout;
-#endif
 
 	int fontsize;
 	int space_width;				  /* width (pixels) of the space " " character */
@@ -223,7 +201,6 @@ struct _GtkXText
 	unsigned int recycle:1;
 	unsigned int avoid_trans:1;
 	unsigned int force_render:1;
-	unsigned int shm:1;
 	unsigned int color_paste:1; /* CTRL was pressed when selection finished */
 
 	/* settings/prefs */
@@ -251,7 +228,7 @@ void gtk_xtext_append_indent (xtext_buffer *buf,
 										unsigned char *right_text, int right_len,
 										time_t stamp);
 int gtk_xtext_set_font (GtkXText *xtext, char *name);
-void gtk_xtext_set_background (GtkXText * xtext, GdkPixmap * pixmap, gboolean trans);
+//void gtk_xtext_set_background (GtkXText * xtext, GdkPixmap * pixmap, gboolean trans);
 void gtk_xtext_set_palette (GtkXText * xtext, GdkColor palette[]);
 void gtk_xtext_clear (xtext_buffer *buf, int lines);
 void gtk_xtext_save (GtkXText * xtext, int fh);

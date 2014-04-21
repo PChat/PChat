@@ -13,9 +13,8 @@ EXTRA_DIST = \
 	plugin-tray.h plugingui.c plugingui.h rawlog.h search.h sexy-iso-codes.h \
 	sexy-spell-entry.h sexy-marshal.h textgui.h urlgrab.h userlistgui.h xtext.h
 
-if USE_MMX
-mmx_cmod_S = mmx_cmod.S
-endif
+
+
 
 if DO_PLUGIN
 plugingui_c = plugingui.c

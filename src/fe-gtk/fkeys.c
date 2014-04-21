@@ -13,7 +13,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
  */
 
 #include <stdio.h>
@@ -52,10 +52,6 @@
 #include "maingui.h"
 #include "textgui.h"
 #include "fkeys.h"
-
-#ifdef USE_GTKSPELL
-#include <gtk/gtktextview.h>
-#endif
 
 static void replace_handle (GtkWidget * wid);
 void key_action_tab_clean (void);
@@ -306,7 +302,7 @@ key_handle_key_press (GtkWidget *wid, GdkEventKey *evt, session *sess)
 
 	switch (keyval)
 	{
-	case GDK_space:
+	case GDK_KEY_space:
 		key_action_tab_clean ();
 		break;
 

@@ -1,3 +1,22 @@
+/* XChat
+ * Copyright (C) 1998-2010 Peter Zelezny.
+ * 
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA
+ */
+
 /* file included in chanview.c */
 
 typedef struct
@@ -8,11 +27,7 @@ typedef struct
 
 #include "../common/xchat.h"
 #include "../common/xchatc.h"
-#include "fe-gtk.h"
-#include "maingui.h"
-
 #include <gdk/gdk.h>
-#include <gtk/gtktreeview.h>
 
 static void 	/* row-activated, when a row is double clicked */
 cv_tree_activated_cb (GtkTreeView *view, GtkTreePath *path,
@@ -98,7 +113,7 @@ cv_tree_init (chanview *cv)
 	if (cv->style)
 		gtk_widget_set_style (view, cv->style);
 	/*gtk_widget_modify_base (view, GTK_STATE_NORMAL, &colors[COL_BG]);*/
-	GTK_WIDGET_UNSET_FLAGS (view, GTK_CAN_FOCUS);
+	gtk_widget_set_can_focus (view, FALSE);
 	gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (view), FALSE);
 
 	if (!(prefs.gui_tweaks & 8))

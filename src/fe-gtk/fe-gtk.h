@@ -38,6 +38,10 @@
 #define flag_b flag_wid[8]
 #define NUM_FLAG_WIDS 9
 
+//#ifdef HAVE_GTK_MAC
+//extern GtkosxApplication *osx_app;
+//#endif
+
 struct server_gui
 {
 	GtkWidget *rawlog_window;
@@ -69,10 +73,8 @@ struct server_gui
 	gboolean chanlist_match_wants_channel;	/* match in channel name */
 	gboolean chanlist_match_wants_topic;	/* match in topic */
 
-#ifndef WIN32
-	regex_t chanlist_match_regex;	/* compiled regular expression here */
+	GRegex *chanlist_match_regex;	/* compiled regular expression here */
 	unsigned int have_regex;
-#endif
 
 	guint chanlist_users_found_count;	/* users total for all channels */
 	guint chanlist_users_shown_count;	/* users total for displayed channels */
@@ -179,10 +181,11 @@ int SPELL_ENTRY_GET_POS (GtkWidget *entry);
 void SPELL_ENTRY_SET_POS (GtkWidget *entry, int pos);
 void SPELL_ENTRY_INSERT (GtkWidget *entry, const char *text, int len, int *pos);
 #else
-#define SPELL_ENTRY_GET_TEXT(e) (GTK_ENTRY(e)->text)
+#define SPELL_ENTRY_GET_TEXT(e) ((char *)(gtk_entry_get_text (GTK_ENTRY(e))))
 #define SPELL_ENTRY_SET_TEXT(e,txt) gtk_entry_set_text(GTK_ENTRY(e),txt)
 #define SPELL_ENTRY_SET_EDITABLE(e,v) gtk_editable_set_editable(GTK_EDITABLE(e),v)
 #define SPELL_ENTRY_GET_POS(e) gtk_editable_get_position(GTK_EDITABLE(e))
 #define SPELL_ENTRY_SET_POS(e,p) gtk_editable_set_position(GTK_EDITABLE(e),p);
 #define SPELL_ENTRY_INSERT(e,t,l,p) gtk_editable_insert_text(GTK_EDITABLE(e),t,l,p)
+
 #endif

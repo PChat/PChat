@@ -62,7 +62,7 @@ endif
 noinst_PROGRAMS = make-te
 
 libxchatcommon_a_SOURCES = cfgfiles.c chanopt.c ctcp.c dcc.c xchat.c \
-	history.c ignore.c inbound.c marshal.c modes.c $(msproxy_c) network.c notify.c \
+	history.c ignore.c inbound.c modes.c $(msproxy_c) network.c notify.c \
 	outbound.c plugin.c plugin-timer.c proto-irc.c server.c servlist.c \
 	$(ssl_c) text.c tree.c url.c userlist.c util.c
 libxchatcommon_a_CFLAGS = $(LIBPROXY_CFLAGS)
@@ -72,13 +72,6 @@ textenums.h: textevents.h
 textevents.h: textevents.in make-te
 	$(AM_V_GEN) ./make-te < textevents.in > textevents.h 2> textenums.h
 
-marshal.h: marshalers.list
-	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix=_hexchat_marshal --header $(srcdir)/marshalers.list > $@
-
-marshal.c: marshalers.list
-	$(AM_V_GEN) $(GLIB_GENMARSHAL) --prefix=_hexchat_marshal --body $(srcdir)/marshalers.list > $@
-
-
-BUILT_SOURCES = textenums.h textevents.h marshal.c marshal.h
+BUILT_SOURCES = textenums.h textevents.h
 
 CLEANFILES = $(BUILT_SOURCES)
