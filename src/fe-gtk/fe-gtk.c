@@ -999,21 +999,26 @@ fe_open_url_inner (const char *url)
 #ifdef WIN32
 	ShellExecute (0, "open", url, NULL, NULL, SW_SHOWNORMAL);
 #else
+
+	/* lets try what gtk has built in first. */
+	if (gtk_show_uri (NULL, url, GDK_CURRENT_TIME, NULL))
+		return;
+		
 	/* universal desktop URL opener (from xdg-utils). Supports gnome,kde,xfce4. */
 	if (try_browser ("xdg-open", NULL, url))
 		return;
 
-	/* try to detect GNOME */
+	/* try to detect GNOME (this is depreciated) */
 	if (g_getenv ("GNOME_DESKTOP_SESSION_ID"))
 	{
-		if (try_browser ("gnome-open", NULL, url)) /* Gnome 2.4+ has this */
+		if (try_browser ("gvfs-open", NULL, url))
 			return;
 	}
 
 	/* try to detect KDE */
 	if (g_getenv ("KDE_FULL_SESSION"))
 	{
-		if (try_browser ("kfmclient", "exec", url))
+		if (try_browser ("kde-open", NULL, url))
 			return;
 	}
 
@@ -1022,7 +1027,7 @@ fe_open_url_inner (const char *url)
 		return;
 
 	/* fresh out of ideas... */
-	try_browser ("mozilla", NULL, url);
+	try_browser ("chrome", NULL, url);
 #endif
 }
 
