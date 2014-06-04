@@ -468,6 +468,7 @@ const struct prefs vars[] = {
 	{"gui_tray_flags", P_OFFINT (gui_tray_flags), TYPE_INT},
 	{"gui_tweaks", P_OFFINT (gui_tweaks), TYPE_INT},
 	{"gui_ulist_buttons", P_OFFINT (userlistbuttons), TYPE_BOOL},
+	{"gui_ulist_color", P_OFFINT (gui_ulist_color), TYPE_BOOL},
 	{"gui_ulist_doubleclick", P_OFFSET (doubleclickuser), TYPE_STR},
 	{"gui_ulist_hide", P_OFFINT (hideuserlist), TYPE_BOOL},
 	{"gui_ulist_left", P_OFFINT (_gui_ulist_left), TYPE_BOOL},	/* obsolete */

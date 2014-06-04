@@ -29,7 +29,6 @@
 #include <io.h>
 #else
 #include <unistd.h>
-#include <sys/mman.h>
 #endif
 
 #include "xchat.h"
@@ -167,7 +166,7 @@ scrollback_shrink (session *sess)
 	int fh;
 	int lines;
 	int line;
-	int len;
+	gsize len;
 	char *p;
 
 	scrollback_close (sess);
@@ -277,17 +276,6 @@ scrollback_load (session *sess)
 	time_t stamp;
 	int lines;
 
-#ifdef WIN32
-#if 0
-	char *cleaned_text;
-	int cleaned_len;
-#endif
-#else
-	char *map, *end_map;
-	struct stat statbuf;
-	const char *begin, *eol;
-#endif
-
 	if (sess->text_scrollback == SET_DEFAULT)
 	{
 		if (!prefs.text_replay)
@@ -306,71 +294,6 @@ scrollback_load (session *sess)
 	if (fh == -1)
 		return;
 
-#ifndef WIN32
-	if (fstat (fh, &statbuf) < 0)
-		return;
-
-	map = mmap (NULL, statbuf.st_size, PROT_READ, MAP_PRIVATE, fh, 0);
-	if (map == MAP_FAILED)
-		return;
-
-	end_map = map + statbuf.st_size;
-
-	lines = 0;
-	begin = map;
-	while (begin < end_map)
-	{
-		int n_bytes;
-
-		eol = memchr (begin, '\n', end_map - begin);
-
-		if (!eol)
-			eol = end_map;
-
-		n_bytes = MIN (eol - begin, sizeof (buf) - 1);
-
-		strncpy (buf, begin, n_bytes);
-
-		buf[n_bytes] = 0;
-
-		if (buf[0] == 'T')
-		{
-			if (sizeof (time_t) == 4)
-				stamp = strtoul (buf + 2, NULL, 10);
-			else
-				stamp = strtoull (buf + 2, NULL, 10); /* just incase time_t is 64 bits */
-			text = strchr (buf + 3, ' ');
-			if (text)
-			{
-				if (prefs.text_stripcolor_replay)
-				{
-					text = strip_color (text + 1, -1, STRIP_COLOR);
-				}
-				fe_print_text (sess, text, stamp);
-				if (prefs.text_stripcolor_replay)
-				{
-					g_free (text);
-				}
-			}
-			lines++;
-		}
-
-		begin = eol + 1;
-	}
-
-	sess->scrollwritten = lines;
-
-	if (lines)
-	{
-		text = ctime (&stamp);
-		text[24] = 0;	/* get rid of the \n */
-		snprintf (buf, sizeof (buf), "\n*\t%s %s\n\n", _("Loaded log from"), text);
-		fe_print_text (sess, buf, 0);
-		/*EMIT_SIGNAL (XP_TE_GENMSG, sess, "*", buf, NULL, NULL, NULL, 0);*/
-	}
-
-	munmap (map, statbuf.st_size);
-#else
 	lines = 0;
 	while (waitline (fh, buf, sizeof buf, FALSE) != -1)
 	{
@@ -387,18 +310,6 @@ scrollback_load (session *sess)
 				{
 					text = strip_color (text + 1, -1, STRIP_COLOR);
 				}
-#if 0
-				cleaned_text = text_replace_non_bmp (text, -1, &cleaned_len);
-				if (cleaned_text != NULL)
-				{
-					if (prefs.text_stripcolor_replay)
-					{
-						g_free (text);
-					}
-					text = cleaned_text;
-				}
-#endif
-				text_replace_non_bmp2 (text);
 				fe_print_text (sess, text, stamp);
 				if (prefs.text_stripcolor_replay)
 				{
@@ -407,6 +318,7 @@ scrollback_load (session *sess)
 			}
 			lines++;
 		}
+
 	}
 
 	sess->scrollwritten = lines;
@@ -419,7 +331,6 @@ scrollback_load (session *sess)
 		fe_print_text (sess, buf, 0);
 		/*EMIT_SIGNAL (XP_TE_GENMSG, sess, "*", buf, NULL, NULL, NULL, 0);*/
 	}
-#endif
 
 	close (fh);
 }
@@ -926,71 +837,6 @@ iso_8859_1_to_utf8 (unsigned char *text, int len, gsize *bytes_written)
 	return res;
 }
 
-#ifdef WIN32
-/* replace characters outside of the Basic Multilingual Plane with
- * replacement characters (0xFFFD) */
-#if 0
-char *
-text_replace_non_bmp (char *utf8_input, int input_length, glong *output_length)
-{
-	gunichar *ucs4_text;
-	gunichar suspect;
-	gchar *utf8_text;
-	glong ucs4_length;
-	glong index;
-
-	ucs4_text = g_utf8_to_ucs4_fast (utf8_input, input_length, &ucs4_length);
-
-	/* replace anything not in the Basic Multilingual Plane
-	 * (code points above 0xFFFF) with the replacement
-	 * character */
-	for (index = 0; index < ucs4_length; index++)
-	{
-		suspect = ucs4_text[index];
-		if ((suspect >= 0x1D173 && suspect <= 0x1D17A)
-			|| (suspect >= 0xE0001 && suspect <= 0xE007F))
-		{
-			ucs4_text[index] = 0xFFFD; /* replacement character */
-		}
-	}
-
-	utf8_text = g_ucs4_to_utf8 (
-		ucs4_text,
-		ucs4_length,
-		NULL,
-		output_length,
-		NULL
-	);
-	g_free (ucs4_text);
-
-	return utf8_text;
-}
-#endif
-
-void
-text_replace_non_bmp2 (char *utf8_input)
-{
-	char *tmp = utf8_input, *next;
-	gunichar suspect;
-
-	while (tmp != NULL && *tmp)
-	{
-		next = g_utf8_next_char(tmp);
-		suspect = g_utf8_get_char_validated(tmp, next - tmp);
-		if ((suspect >= 0x1D173 && suspect <= 0x1D17A) || (suspect >= 0xE0001 && suspect <= 0xE007F))
-		{
-			/* 0xFFFD - replacement character */
-			*tmp = 0xEF;
-			*(++tmp) = 0xBF;
-			*(++tmp) = 0xBD;
-			*(++tmp) = 0x1A;	/* ASCII Sub to fill the 4th non-BMP byte */
-		}
-
-		tmp = next;
-	}
-}
-#endif
-
 char *
 text_validate (char **text, int *len)
 {
@@ -1295,6 +1141,11 @@ static char * const pevt_chanban_help[] = {
 	N_("The ban mask"),
 };
 
+static char * const pevt_chanquiet_help[] = {
+	N_("The nick of the person who did the quieting"),
+	N_("The quiet mask"),
+};
+
 static char * const pevt_chanrmkey_help[] = {
 	N_("The nick who removed the key"),
 };
@@ -1320,6 +1171,11 @@ static char * const pevt_chandevoice_help[] = {
 static char * const pevt_chanunban_help[] = {
 	N_("The nick of the person of did the unban'ing"),
 	N_("The ban mask"),
+};
+
+static char * const pevt_chanunquiet_help[] = {
+	N_("The nick of the person of did the unquiet'ing"),
+	N_("The quiet mask"),
 };
 
 static char * const pevt_chanexempt_help[] = {
@@ -1563,6 +1419,11 @@ static char * const pevt_dccsendoffer_help[] = {
 static char * const pevt_dccgenericoffer_help[] = {
 	N_("DCC String"),
 	N_("Nickname"),
+};
+
+static char * const pevt_notifyaway_help[] = {
+	N_("Nickname"),
+	N_("Away Reason"),
 };
 
 static char * const pevt_notifynumber_help[] = {
@@ -1918,6 +1779,8 @@ format_event (session *sess, int index, char **args, char *o, int sizeofo, unsig
 				printf ("arg[%d] is NULL in print event\n", a + 1);
 			} else
 			{
+				if (strlen (ar) > sizeofo - oi - 4)
+					ar[sizeofo - oi - 4] = 0;	/* Avoid buffer overflow */
 				if (stripcolor_args & ARG_FLAG(a + 1)) len = strip_color2 (ar, -1, &o[oi], STRIP_ALL);
 				else len = strip_hidden_attribute (ar, &o[oi]);
 				oi += len;
@@ -2142,8 +2005,8 @@ pevt_build_string (const char *input, char **output, int *max_arg)
 
 static char rcolors[] = { 19, 20, 22, 24, 25, 26, 27, 28, 29 };
 
-static int
-color_of (char *name)
+int
+text_color_of (char *name)
 {
 	int i = 0, sum = 0;
 
@@ -2166,7 +2029,7 @@ text_emit (int index, session *sess, char *a, char *b, char *c, char *d)
 
 	if (prefs.colorednicks && (index == XP_TE_CHANACTION || index == XP_TE_CHANMSG))
 	{
-		snprintf (tbuf, sizeof (tbuf), "\003%d%s", color_of (a), a);
+		snprintf (tbuf, sizeof (tbuf), "\003%d%s", text_color_of (a), a);
 		a = tbuf;
 		stripcolor_args &= ~ARG_FLAG(1);	/* don't strip color from this argument */
 	}

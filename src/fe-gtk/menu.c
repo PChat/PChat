@@ -1208,7 +1208,6 @@ static void
 menu_search_next ()
 {
 	GtkXText *xtext = GTK_XTEXT (current_sess->gui->xtext);
-	xtext_buffer *buf = xtext->buffer;
 
 	if (!gtk_xtext_search (xtext, buf->search_text,
 		(buf->search_flags & (case_match | follow | regexp)), NULL))

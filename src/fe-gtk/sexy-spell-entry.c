@@ -192,7 +192,6 @@ sexy_spell_entry_class_init(SexySpellEntryClass *klass)
 	GObjectClass *gobject_class;
 	GtkObjectClass *object_class;
 	GtkWidgetClass *widget_class;
-	GtkEntryClass *entry_class;
 
 	initialize_enchant();
 
@@ -201,7 +200,6 @@ sexy_spell_entry_class_init(SexySpellEntryClass *klass)
 	gobject_class = G_OBJECT_CLASS(klass);
 	object_class  = GTK_OBJECT_CLASS(klass);
 	widget_class  = GTK_WIDGET_CLASS(klass);
-	entry_class   = GTK_ENTRY_CLASS(klass);
 
 	if (have_enchant)
 		klass->word_check = default_word_check;
@@ -696,10 +694,6 @@ sexy_spell_entry_finalize(GObject *obj)
 static void
 sexy_spell_entry_destroy(GtkObject *obj)
 {
-	SexySpellEntry *entry;
-
-	entry = SEXY_SPELL_ENTRY(obj);
-
 	if (GTK_OBJECT_CLASS(parent_class)->destroy)
 		GTK_OBJECT_CLASS(parent_class)->destroy(obj);
 }
@@ -935,6 +929,7 @@ sexy_spell_entry_changed(GtkEditable *editable, gpointer data)
 	sexy_spell_entry_recheck_all(entry);
 }
 
+#if 0
 static gboolean
 enchant_has_lang(const gchar *lang, GSList *langs) {
 	GSList *i;
@@ -945,6 +940,7 @@ enchant_has_lang(const gchar *lang, GSList *langs) {
 	}
 	return FALSE;
 }
+#endif
 
 /**
  * sexy_spell_entry_activate_default_languages:

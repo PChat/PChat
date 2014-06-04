@@ -29,6 +29,7 @@
 #include "../common/util.h"
 #include "../common/userlist.h"
 #include "../common/modes.h"
+#include "../common/text.h"
 #include "../common/notify.h"
 #include "../common/xchatc.h"
 #include "../common/fe.h"
@@ -316,21 +317,21 @@ fe_userlist_rehash (session *sess, struct User *user)
 {
 	GtkTreeIter *iter;
 	int sel;
-	int do_away = TRUE;
+	int nick_color = NULL;
 
 	iter = find_row (GTK_TREE_VIEW (sess->gui->user_tree),
 						  sess->res->user_model, user, &sel);
 	if (!iter)
 		return;
 
-	if (prefs.away_size_max < 1 || !prefs.away_track)
-		do_away = FALSE;
+	if (prefs.away_track < 1 || !prefs.away_size_max)
+		nick_color = COL_AWAY;
+	else if (prefs.gui_ulist_color)
+		nick_color = text_color_of(user->nick);
 
 	gtk_list_store_set (GTK_LIST_STORE (sess->res->user_model), iter,
 							  COL_HOST, user->hostname,
-							  COL_GDKCOLOR, (do_away)
-									?	(user->away ? &colors[COL_AWAY] : NULL)
-									:	(NULL),
+							  COL_GDKCOLOR, nick_color ? &colors[nick_color] : NULL,
 							  -1);
 }
 
@@ -340,11 +341,13 @@ fe_userlist_insert (session *sess, struct User *newuser, int row, int sel)
 	GtkTreeModel *model = sess->res->user_model;
 	GdkPixbuf *pix = get_user_icon (sess->server, newuser);
 	GtkTreeIter iter;
-	int do_away = TRUE;
 	char *nick;
+	int nick_color = NULL;
 
-	if (prefs.away_size_max < 1 || !prefs.away_track)
-		do_away = FALSE;
+	if (prefs.away_track && prefs.away_size_max && user->away)
+		nick_color = COL_AWAY;
+	else if (prefs.gui_ulist_color)
+		nick_color = text_color_of(newuser->nick);
 
 	nick = newuser->nick;
 	if (prefs.gui_tweaks & 64)
@@ -363,9 +366,7 @@ fe_userlist_insert (session *sess, struct User *newuser, int row, int sel)
 									COL_NICK, nick,
 									COL_HOST, newuser->hostname,
 									COL_USER, newuser,
-									COL_GDKCOLOR, (do_away)
-										?	(newuser->away ? &colors[COL_AWAY] : NULL)
-										:	(NULL),
+									COL_GDKCOLOR, nick_color ? &colors[nick_color] : NULL,
 								  -1);
 
 	if (prefs.gui_tweaks & 64)

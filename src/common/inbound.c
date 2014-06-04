@@ -302,8 +302,10 @@ is_hilight (char *from, char *text, session *sess, server *serv)
 	{
 		g_free (text);
 		if (sess != current_tab)
+		{
 			sess->nick_said = TRUE;
 			lastact_update (sess);
+		}
 		fe_set_hilight (sess);
 		return 1;
 	}
@@ -971,7 +973,16 @@ inbound_away (server *serv, char *nick, char *msg)
 	{
 		sess = list->data;
 		if (sess->server == serv)
+		{
 			userlist_set_away (sess, nick, TRUE);
+			if (sess == serv->front_session && notify_is_in_list (serv, nick))
+			{
+				if (reason)
+					EMIT_SIGNAL (XP_TE_NOTIFYAWAY, sess, nick, reason, NULL, NULL, 0);
+				else
+					EMIT_SIGNAL (XP_TE_NOTIFYBACK, sess, nick, NULL, NULL, NULL, 0);
+			}
+		}
 		list = list->next;
 	}
 }

@@ -171,7 +171,7 @@ static int gtk_xtext_render_ents (GtkXText * xtext, textentry *, textentry *);
 static void gtk_xtext_recalc_widths (xtext_buffer *buf, int);
 static void gtk_xtext_fix_indent (xtext_buffer *buf);
 static int gtk_xtext_find_subline (GtkXText *xtext, textentry *ent, int line);
-static char *gtk_xtext_conv_color (unsigned char *text, int len, int *newlen);
+/* static char *gtk_xtext_conv_color (unsigned char *text, int len, int *newlen); */
 /* For use by gtk_xtext_strip_color() and its callers -- */
 typedef union offlen_u {
    struct offlen_s {
@@ -2767,7 +2767,7 @@ gtk_xtext_strip_color (unsigned char *text, int len, unsigned char *outbuf,
 	return new_str;
 }
 
-
+#if 0
 /* GeEkMaN: converts mIRC control codes to literal control codes */
 
 static char *
@@ -2860,6 +2860,7 @@ gtk_xtext_conv_color (unsigned char *text, int len, int *newlen)
 
 	return new_str;
 }
+#endif
 
 /* gives width of a string, excluding the mIRC codes */
 
@@ -3719,13 +3720,13 @@ static void
 shade_image (GdkVisual *visual, void *data, int bpl, int bpp, int w, int h,
 				 int rm, int gm, int bm, int bg, int depth)
 {
+#ifdef USE_MMX
 	int bg_r, bg_g, bg_b;
 
 	bg_r = bg & visual->red_mask;
 	bg_g = bg & visual->green_mask;
 	bg_b = bg & visual->blue_mask;
 
-#ifdef USE_MMX
 	/* the MMX routines are about 50% faster at 16-bit. */
 	/* only use MMX routines with a pure black background */
 	if (bg_r == 0 && bg_g == 0 && bg_b == 0 && have_mmx ())	/* do a runtime check too! */
