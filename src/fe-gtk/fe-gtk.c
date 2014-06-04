@@ -662,9 +662,12 @@ fe_print_text (struct session *sess, char *text, time_t stamp)
 }
 
 void
-fe_beep (void)
+fe_beep (session *sess)
 {
-	gdk_beep ();
+	if (fe_gui_info (sess, 0) != 1)
+	{
+		gdk_beep ();
+	}
 }
 
 void
@@ -1026,7 +1029,7 @@ static void
 fe_open_url_locale (const char *url)
 {
 	/* the http:// part's missing, prepend it, otherwise it won't always work */
-	if (strchr (url, ':') == NULL && url_check_word (url, strlen (url)) != WORD_PATH)
+	if (strchr (url, ':') == NULL && url_check_word (url) != WORD_PATH)
 	{
 		url = g_strdup_printf ("http://%s", url);
 		fe_open_url_inner (url);

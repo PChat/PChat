@@ -123,32 +123,32 @@ pixmaps_init (void)
 	pix_book = gdk_pixbuf_new_from_inline (-1, bookpng, FALSE, 0);
 
 	/* used in About window, tray icon and WindowManager icon. */
-	/*** pix_xchat = load_pixmap ("xchat", xchatpng, 1); ***/
-	pix_xchat = gdk_pixbuf_new_from_inline (-1, xchatpng, FALSE, 0);
+	 pix_xchat = load_pixmap ("xchat", xchatpng, 1); 
+	/*** pix_xchat = gdk_pixbuf_new_from_inline (-1, xchatpng, FALSE, 0); ***/
 
-	/* userlist icons, with inlined defaults 
+	userlist icons, with inlined defaults 
 	pix_hop = load_pixmap ("hop", hoppng, 1);
 	pix_purple = load_pixmap ("purple", purplepng, 1);
 	pix_red = load_pixmap ("red", redpng, 1);
 	pix_op = load_pixmap ("op", oppng, 1);
-	pix_voice = load_pixmap ("voice", voicepng, 1); */
-	pix_hop = gdk_pixbuf_new_from_inline (-1, hoppng, FALSE, 0);
+	pix_voice = load_pixmap ("voice", voicepng, 1);
+	/*  pix_hop = gdk_pixbuf_new_from_inline (-1, hoppng, FALSE, 0);
 	pix_purple = gdk_pixbuf_new_from_inline (-1, purplepng, FALSE, 0);
 	pix_red = gdk_pixbuf_new_from_inline (-1, redpng, FALSE, 0);
 	pix_op = gdk_pixbuf_new_from_inline (-1, oppng, FALSE, 0);
 	pix_voice = gdk_pixbuf_new_from_inline (-1, voicepng, FALSE, 0);
 
-	/* tray icons, with inlined defaults
+	tray icons, with inlined defaults */
 	pix_tray_msg = load_pixmap ("message", traymsgpng, 1);
 	pix_tray_hilight = load_pixmap ("highlight", trayhilightpng, 1);
-	pix_tray_file = load_pixmap ("fileoffer", trayfilepng, 1); */
-	pix_tray_msg = gdk_pixbuf_new_from_inline (-1, traymsgpng, FALSE, 0);
+	pix_tray_file = load_pixmap ("fileoffer", trayfilepng, 1); 
+	/* pix_tray_msg = gdk_pixbuf_new_from_inline (-1, traymsgpng, FALSE, 0);
 	pix_tray_hilight = gdk_pixbuf_new_from_inline (-1, trayhilightpng, FALSE, 0);
-	pix_tray_file = gdk_pixbuf_new_from_inline (-1, trayfilepng, FALSE, 0);
+	pix_tray_file = gdk_pixbuf_new_from_inline (-1, trayfilepng, FALSE, 0);*/
 
-	/* treeview icons, no defaults, load from disk only 
+	/* treeview icons, no defaults, load from disk only */
 	pix_channel = load_pixmap ("channel", NULL, 0);
 	pix_dialog = load_pixmap ("dialog", NULL, 0);
 	pix_server = load_pixmap ("server", NULL, 0);
-	pix_util = load_pixmap ("util", NULL, 0); */
+	pix_util = load_pixmap ("util", NULL, 0); 
 }

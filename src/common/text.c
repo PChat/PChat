@@ -2313,7 +2313,7 @@ sound_beep (session *sess)
 		sound_play_event (XP_TE_BEEP);
 	else
 		/* system beep */
-		fe_beep ();
+		fe_beep (sess);
 }
 
 static char *
@@ -2362,7 +2362,7 @@ sound_play (const char *file, gboolean quiet)
 		strncpy (wavfile, file, sizeof (wavfile));
 	} else
 #endif
-	if (file[0] != '/')
+	if (file[0] == '/')
 	{
 		snprintf (wavfile, sizeof (wavfile), "%s/%s", prefs.sounddir, file);
 	} else
